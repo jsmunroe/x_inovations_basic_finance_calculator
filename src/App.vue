@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
-import { createVueModel } from './models/VueModel'
+import { computeResult, createVueModel, saveQuote } from './models/VueModel'
 import FinanceQuoteSection from './components/FinanceQuoteSection.vue'
 import ResultSection from './components/ResultSection.vue'
 
@@ -9,10 +9,33 @@ const vueModel = reactive(createVueModel())
 watch(
   () => vueModel.financeQuote,
   (newVal) => {
-    vueModel.result.outOfPocket = newVal.outOfPocket
+    const { quoteName } = vueModel.result
+
+    vueModel.result = {
+      ...computeResult(newVal),
+      quoteName,
+    }
   },
   { deep: true },
 )
+
+function handleSaveClick() {
+  if (!vueModel.result.quoteName) {
+    // This should be done a much better way, but for now....
+    const quoteName = document.querySelector('#quoteName') as HTMLInputElement;
+    quoteName.setCustomValidity('Please enter a quote name before saving.');
+    quoteName.reportValidity();
+    return;
+  }
+
+  saveQuote(vueModel, vueModel.result.quoteName);
+
+  const newVueModel = createVueModel();
+  vueModel.financeQuote = newVueModel.financeQuote;
+  vueModel.result = newVueModel.result;
+  vueModel.id = newVueModel.id;
+}
+
 </script>
 
 <template>
@@ -25,12 +48,22 @@ watch(
 
   <main>
     <div class="layout">
-      <FinanceQuoteSection v-model="vueModel.financeQuote" />
+      <app-section title="Finance Quote">
+        <FinanceQuoteSection v-model="vueModel.financeQuote" />
+      </app-section>
 
-      <ResultSection v-model="vueModel.result" />
+      <app-section title="Result">
+        <ResultSection v-model="vueModel.result" />
+
+        <div class="buttons">
+          <button type="submit" @click="handleSaveClick"><i class="fa-regular fa-floppy-disk fa-lg"></i> Save</button>
+        </div>
+      </app-section>
     </div>
 
-    <app-section title="Saved Quotes" class="span-2"> </app-section>
+    <app-section title="Saved Quotes" class="span-2">
+
+    </app-section>
   </main>
 </template>
 

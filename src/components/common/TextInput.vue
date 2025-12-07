@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+const model = defineModel<string>({ required: true })
+
 const props = defineProps({
-  value: {
+  id: {
     type: String,
     default: '',
-    required: true,
+    required: false,
   },
-
+  name: {
+    type: String,
+    default: '',
+    required: false,
+  },
   placeholder: {
     type: String,
     default: '',
@@ -14,21 +20,21 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits<{
-  input: [value: string]
-}>()
-
-function handleInput(event: InputEvent) {
+function handleFocus(event: FocusEvent) {
   const target = event.target as HTMLInputElement
-  const numericValue = parseFloat(target.value.replace(/[^0-9.-]+/g, ''))
-  emit('input', isNaN(numericValue) ? 0 : numericValue)
+  target.select()
 }
 
-const value = computed(() => props.value)
+function handleBlur(event: FocusEvent) {
+  const target = event.target as HTMLInputElement
+  model.value = target.value;
+}
+
+const value = computed(() => model.value)
 </script>
 
 <template>
-  <input type="text" :placeholder="props.placeholder" :value="value" @input="handleInput" />
+  <input type="text" :id="props.id" :name="props.name" :placeholder="props.placeholder" :value="value" @focus="handleFocus" @blur="handleBlur" />
 </template>
 
 <style scoped></style>

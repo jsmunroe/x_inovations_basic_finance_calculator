@@ -5,28 +5,26 @@ const result = defineModel<ResultModel>({ required: true })
 </script>
 
 <template>
-  <app-section title="Result">
-    <div class="grid">
-      <label>Taxes:</label>
-      <currency-view :value="result.taxes" />
+  <div class="grid">
+    <label>Taxes:</label>
+    <currency-view :value="result.taxes" />
 
-      <label>Base Loan Amount:</label>
-      <currency-view :value="result.baseLoanAmount" />
+    <label>Base Loan Amount:</label>
+    <currency-view :value="result.baseLoanAmount" />
 
-      <label>Interest:</label>
-      <currency-view :value="result.interest" />
+    <label>Interest:</label>
+    <currency-view :value="result.interest" />
 
-      <label>Total Loan Amount:</label>
-      <currency-view :value="result.totalLoanAmount" />
+    <label>Total Loan Amount:</label>
+    <currency-view :value="result.totalLoanAmount" />
 
-      <label><strong>Payment:</strong></label>
-      <currency-view :value="result.payment" />
+    <label><strong>Payment:</strong></label>
+    <currency-view :value="result.payment" />
 
-      <label>Out Of Pocket:</label>
-      <currency-view :value="result.outOfPocket" />
+    <label>Out Of Pocket:</label>
+    <currency-view :value="result.outOfPocket" />
 
-      <label>Quote Name:</label>
-      <text-input :value="result.quoteName" />
-    </div>
-  </app-section>
+    <label>Quote Name:</label>
+    <text-input id="quoteName" name="quoteName" :value="result.quoteName" />
+  </div>
 </template>

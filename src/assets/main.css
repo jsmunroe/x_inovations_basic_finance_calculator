@@ -91,3 +91,36 @@ section {
     }
   }
 }
+
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 0.5rem;
+
+  grid-column: 1 / -1;
+
+  padding: 0rem 1rem;
+  padding-bottom: 0.5rem;
+}
+
+button {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  justify-content: space-around;
+  gap: 0.4rem;
+
+  border: none;
+  background-color: #1C1917;
+  border-radius: 5px;
+
+  color: white;
+  font-size: 0.75rem;
+
+  padding: 0.4rem;
+  padding-right: 0.8rem;
+
+  cursor: pointer;
+}

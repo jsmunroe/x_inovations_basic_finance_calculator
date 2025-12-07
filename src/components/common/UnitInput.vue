@@ -3,6 +3,14 @@ import { computed } from 'vue'
 const model = defineModel<number>({ required: true })
 
 const props = defineProps({
+  id: {
+    type: String,
+    required: false,
+  },
+  name: {
+    type: String,
+    required: false,
+  },
   symbol: {
     type: String,
     required: true,
@@ -13,10 +21,17 @@ const props = defineProps({
   },
 })
 
-function handleInput(event: InputEvent) {
+function handleBlur(event: FocusEvent) {
   const target = event.target as HTMLInputElement
-  const numericValue = parseFloat(target.value.replace(/[^0-9.-]+/g, ''))
-  model.value = isNaN(numericValue) ? 0 : numericValue
+  let numericValue = parseFloat(target.value.replace(/[^0-9.-]+/g, ''))
+  numericValue = isNaN(numericValue) ? 0 : numericValue
+  target.value = formatNumber(numericValue)
+  model.value = numericValue
+}
+
+function handleFocus(event: FocusEvent) {
+  const target = event.target as HTMLInputElement
+  target.select()
 }
 
 function formatNumber(value: number): string {
@@ -35,7 +50,7 @@ const value = computed(() => formatNumber(model.value))
 
 <template>
   <div class="currency-input-wrapper">
-    <input type="text" placeholder="0.0" :value="value" @input="handleInput" />
+    <input type="text" :id="props.id" :name="props.name" placeholder="0.0" :value="value" @focus="handleFocus" @blur="handleBlur" />
     <span class="currency-symbol">{{ props.symbol }}</span>
   </div>
 </template>

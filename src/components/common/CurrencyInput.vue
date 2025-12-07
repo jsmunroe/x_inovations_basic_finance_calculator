@@ -2,10 +2,28 @@
 import { computed } from 'vue'
 const model = defineModel<number>({ required: true })
 
-function handleInput(event: FocusEvent) {
+const props = defineProps({
+  id: {
+    type: String,
+    required: false,
+  },
+  name: {
+    type: String,
+    required: false,
+  },
+})
+
+function handleBlur(event: FocusEvent) {
   const target = event.target as HTMLInputElement
-  const numericValue = parseFloat(target.value.replace(/[^0-9.-]+/g, ''))
-  model.value = isNaN(numericValue) ? 0 : numericValue
+  let numericValue = parseFloat(target.value.replace(/[^0-9.-]+/g, ''))
+  numericValue = isNaN(numericValue) ? 0 : numericValue
+  target.value = formatCurrency(numericValue)
+  model.value = numericValue
+}
+
+function handleFocus(event: FocusEvent) {
+  const target = event.target as HTMLInputElement
+  target.select()
 }
 
 function formatCurrency(value: number): string {
@@ -21,7 +39,7 @@ const formattedValue = computed(() => formatCurrency(model.value))
 <template>
   <div class="currency-input-wrapper">
     <span class="currency-symbol">$</span>
-    <input type="text" placeholder="0.0" :value="formattedValue" @blur="handleInput" />
+    <input type="text" :id="props.id" :name="props.name" placeholder="0.0" :value="formattedValue" @focus="handleFocus" @blur="handleBlur" />
   </div>
 </template>
 
