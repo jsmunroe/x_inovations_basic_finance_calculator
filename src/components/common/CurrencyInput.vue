@@ -1,20 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-const props = defineProps({
-  value: {
-    type: Number,
-    default: 0,
-  },
-})
+const model = defineModel<number>({ required: true })
 
-const emit = defineEmits<{
-  input: [value: number]
-}>()
-
-function handleInput(event: InputEvent) {
+function handleInput(event: FocusEvent) {
   const target = event.target as HTMLInputElement
   const numericValue = parseFloat(target.value.replace(/[^0-9.-]+/g, ''))
-  emit('input', isNaN(numericValue) ? 0 : numericValue)
+  model.value = isNaN(numericValue) ? 0 : numericValue
 }
 
 function formatCurrency(value: number): string {
@@ -24,13 +15,13 @@ function formatCurrency(value: number): string {
   })
 }
 
-const value = computed(() => formatCurrency(props.value))
+const formattedValue = computed(() => formatCurrency(model.value))
 </script>
 
 <template>
   <div class="currency-input-wrapper">
     <span class="currency-symbol">$</span>
-    <input type="text" placeholder="0.0" :value="value" @input="handleInput" />
+    <input type="text" placeholder="0.0" :value="formattedValue" @blur="handleInput" />
   </div>
 </template>
 

@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+const model = defineModel<number>({ required: true })
+
 const props = defineProps({
-  value: {
-    type: Number,
-    default: 0,
-    required: true,
-  },
   symbol: {
     type: String,
     required: true,
@@ -16,14 +13,10 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits<{
-  input: [value: number]
-}>()
-
 function handleInput(event: InputEvent) {
   const target = event.target as HTMLInputElement
   const numericValue = parseFloat(target.value.replace(/[^0-9.-]+/g, ''))
-  emit('input', isNaN(numericValue) ? 0 : numericValue)
+  model.value = isNaN(numericValue) ? 0 : numericValue
 }
 
 function formatNumber(value: number): string {
@@ -37,7 +30,7 @@ function formatNumber(value: number): string {
   })
 }
 
-const value = computed(() => formatNumber(props.value))
+const value = computed(() => formatNumber(model.value))
 </script>
 
 <template>

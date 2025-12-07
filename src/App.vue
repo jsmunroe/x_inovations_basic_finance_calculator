@@ -1,4 +1,19 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { reactive, watch } from 'vue'
+import { createVueModel } from './models/VueModel'
+import FinanceQuoteSection from './components/FinanceQuoteSection.vue'
+import ResultSection from './components/ResultSection.vue'
+
+const vueModel = reactive(createVueModel())
+
+watch(
+  () => vueModel.financeQuote,
+  (newVal) => {
+    vueModel.result.outOfPocket = newVal.outOfPocket
+  },
+  { deep: true },
+)
+</script>
 
 <template>
   <header>
@@ -10,55 +25,9 @@
 
   <main>
     <div class="layout">
-      <app-section title="Finance Quote">
-        <div class="grid">
-          <label>Cost:</label>
-          <currency-input :value="0" />
+      <FinanceQuoteSection v-model="vueModel.financeQuote" />
 
-          <label>Profit:</label>
-          <currency-input :value="0" />
-
-          <label>Selling Price:</label>
-          <currency-input :value="0" />
-
-          <label>Term:</label>
-          <unit-input :value="0" symbol="Months" :places="0" />
-
-          <label>Rate:</label>
-          <unit-input :value="0" symbol="%" :places="1" />
-
-          <label>Out Of Pocket:</label>
-          <currency-input :value="0" />
-
-          <label>TaxRate:</label>
-          <unit-input :value="0" symbol="%" :places="1" />
-        </div>
-      </app-section>
-
-      <app-section title="Result">
-        <div class="grid">
-          <label>Taxes:</label>
-          <currency-view :value="0" />
-
-          <label>Base Loan Amount:</label>
-          <currency-view :value="0" />
-
-          <label>Interest:</label>
-          <currency-view :value="0" />
-
-          <label>Total Loan Amount:</label>
-          <currency-view :value="0" />
-
-          <label><strong>Payment:</strong></label>
-          <currency-view :value="0" />
-
-          <label>Out Of Pocket:</label>
-          <currency-view :value="0" />
-
-          <label>Quote Name:</label>
-          <text-input value="" />
-        </div>
-      </app-section>
+      <ResultSection v-model="vueModel.result" />
     </div>
 
     <app-section title="Saved Quotes" class="span-2"> </app-section>
