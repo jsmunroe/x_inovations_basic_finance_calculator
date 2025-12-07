@@ -5,6 +5,7 @@ const model = defineModel<SavedQuoteModel[]>({ required: true });
 
 const emit = defineEmits<{
   (e: 'view', quote: SavedQuoteModel): void;
+  (e: 'delete', quote: SavedQuoteModel): void;
 }>();
 
 function handleViewClick(quote: SavedQuoteModel) {
@@ -13,7 +14,7 @@ function handleViewClick(quote: SavedQuoteModel) {
 
 function handleDeleteClick(quote: SavedQuoteModel) {
   // TODO: Add confirmation dialog.
-  model.value = model.value.filter(q => q.id !== quote.id);
+  emit('delete', quote);
 }
 
 </script>
@@ -26,7 +27,7 @@ function handleDeleteClick(quote: SavedQuoteModel) {
       <label>Payment:</label>
       <currency-view :value="quote.result.payment" />
 
-      <label>&nbsp; Out of Pocket:</label>
+      <label>&nbsp;&nbsp; Out of Pocket:</label>
       <currency-view :value="quote.result.outOfPocket" />
     </div>
 

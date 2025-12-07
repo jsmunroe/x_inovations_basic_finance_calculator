@@ -1,3 +1,5 @@
+import * as quotesApi from '@/apis/quotesApi'
+
 export interface FinanceQuoteModel {
   cost: number
   profit: number
@@ -82,12 +84,25 @@ export function createVueModel(): VueModel {
 }
 
 export function saveVueModel(vueModel: VueModel): void {
+  // Keep localStorage for temporary state persistence
   localStorage.setItem('financeCalculatorModel', JSON.stringify(vueModel));
 }
 
-export function loadVueModel(): VueModel {
+export async function loadVueModel(): Promise<VueModel> {
+  // Load from localStorage first for current state
   const savedQuotesJson = localStorage.getItem('financeCalculatorModel');
   const vueModel: VueModel = savedQuotesJson ? JSON.parse(savedQuotesJson) : createVueModel();
+
+  // Load saved quotes from API
+  try {
+    const savedQuotes = await quotesApi.loadQuotes();
+    vueModel.savedQuotes = savedQuotes;
+  } catch (error) {
+    console.error('Failed to load quotes from API:', error);
+    // Fall back to empty array if API fails
+    vueModel.savedQuotes = [];
+  }
+
   return vueModel;
 }
 
@@ -128,30 +143,50 @@ export function computeResult(financeQuote: FinanceQuoteModel): ResultModel {
   }
 }
 
-export function saveQuote(vueModel: VueModel, quoteName: string): SavedQuoteModel {
-  const id = vueModel.id ?? crypto.randomUUID();
-  const existingQuoteIndex = vueModel.savedQuotes.findIndex(quote => quote.id === id);
+export async function saveQuote(vueModel: VueModel, quoteName: string): Promise<SavedQuoteModel> {
+  // Set the quote name
+  vueModel.result.quoteName = quoteName;
 
-  const savedQuote: SavedQuoteModel = vueModel.savedQuotes[existingQuoteIndex]
-    ?? {
-      id,
-      financeQuote: { ...vueModel.financeQuote },
-      result: { ...vueModel.result, quoteName },
-    };
+  if (vueModel.id) {
+    // Update existing quote
+    try {
+      const updatedQuote = await quotesApi.updateQuote(vueModel.id, vueModel);
 
-  vueModel.id  = null;
-  vueModel.financeQuote = createFinanceQuoteModel();
-  vueModel.result = createResultModel();
+      // Update local savedQuotes array
+      const existingQuoteIndex = vueModel.savedQuotes.findIndex(quote => quote.id === vueModel.id);
+      if (existingQuoteIndex !== -1) {
+        vueModel.savedQuotes[existingQuoteIndex] = updatedQuote;
+      }
 
-  if (existingQuoteIndex !== -1) {
-    vueModel.savedQuotes[existingQuoteIndex] = savedQuote;
+      return updatedQuote;
+    } catch (error) {
+      console.error('Failed to update quote:', error);
+      throw error;
+    }
   } else {
-    vueModel.savedQuotes.push(savedQuote);
-  }
+    // Create new quote
+    try {
+      const newQuote = await quotesApi.saveQuote(vueModel);
 
-  return savedQuote;
+      // Add to local savedQuotes array
+      vueModel.savedQuotes.push(newQuote);
+
+      return newQuote;
+    } catch (error) {
+      console.error('Failed to save quote:', error);
+      throw error;
+    }
+  }
 }
 
-export function deleteQuote(vueModel: VueModel,id: string): void {
-  vueModel.savedQuotes = vueModel.savedQuotes.filter(quote => quote.id !== id);
+export async function deleteQuote(vueModel: VueModel, id: string): Promise<void> {
+  try {
+    await quotesApi.deleteQuote(id);
+
+    // Remove from local savedQuotes array
+    vueModel.savedQuotes = vueModel.savedQuotes.filter(quote => quote.id !== id);
+  } catch (error) {
+    console.error('Failed to delete quote:', error);
+    throw error;
+  }
 }

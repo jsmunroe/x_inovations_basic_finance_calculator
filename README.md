@@ -1,54 +1,23 @@
 # x_inovations_basic_finance_calculator
 
-This template should help get you started developing with Vue 3 in Vite.
+## Notes
 
-## Recommended IDE Setup
+I did not include the "Apply" button because I thought it would be a better user experience if the fields in the "Result" section just updated as values were typed into the form. 
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+I had finsihed the front-end, but because of the learning curve with Vue, I was running out of time. Therefore, I asked Claude Sonnet to help me with the back-end. I did check her work thuroughly though. I didn't not use her help for the front-end work at all.
 
-## Recommended Browser Setup
+I created an SVG file for the logo and attempted to match the font thereof as best I could. I found a free font called Goldman that matched it fairly well. 
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) 
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## Front-end Structure
 
-## Type Support for `.vue` Imports in TS
+The application is made up of a main `App` component with three sections containing the `FinanceQuoteSection`, `ResultSection`, and `SaveQuotesSection` components. I added an `AppSection` component to wrap each of the sections in a header and border. 
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+I created `CurrencyInput`, `CurrencyView`, `TextInput`, and `UnitInput` components to handle the special needs of each of the field types used in this app. `CurrencyInput` handles formatting of number values and prevents having to store formatted strings entirely. `CurrencyView` is the same as `CurrencyInput` for a read-omly currency field. `UnitInput` is used for fields that end in a unit like months or percent. And `TextInput` was uses for the "Quote Name" field. 
 
-## Customize configuration
+I did not use any CSS libraries like Bootstrap or Material for this. I created all the CSS for this app myself except for some boilerplate CSS that Vite added to base.css.
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## To Run
 
-## Project Setup
+`CD` to the backend folder and start the back-end server with `npm run dev`.
 
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+In a separate terminal run `npm run dev` on the root directory.

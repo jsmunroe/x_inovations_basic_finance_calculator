@@ -10,10 +10,5 @@
     {
       "path": "./tsconfig.vitest.json"
     }
-  ],
-  "compilerOptions": {
-    "rules": {
-      "@typescript-eslint/no-unused-vars": "off"
-    }
-  }
+  ]
 }

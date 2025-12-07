@@ -1,11 +1,21 @@
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
-import { computeResult, createVueModel, loadVueModel, saveQuote, saveVueModel, type SavedQuoteModel } from './models/VueModel'
+import { reactive, watch, onMounted } from 'vue'
+import { computeResult, createVueModel, loadVueModel, saveQuote, saveVueModel, deleteQuote, type SavedQuoteModel } from './models/VueModel'
 import FinanceQuoteSection from './components/FinanceQuoteSection.vue'
 import ResultSection from './components/ResultSection.vue'
-import SavedQuotes from './components/common/SavedQuotes.vue'
+import SavedQuotes from './components/SavedQuotes.vue'
 
-const vueModel = reactive(loadVueModel())
+const vueModel = reactive(createVueModel())
+
+// Load data on component mount
+onMounted(async () => {
+  try {
+    const loadedModel = await loadVueModel()
+    Object.assign(vueModel, loadedModel)
+  } catch (error) {
+    console.error('Failed to load Vue model:', error)
+  }
+})
 
 watch(
   () => vueModel.financeQuote,
@@ -28,7 +38,7 @@ watch(
   { deep: true },
 )
 
-function handleSaveClick() {
+async function handleSaveClick() {
   if (!vueModel.result.quoteName) {
     // This should be done a much better way, but for now....
     const quoteName = document.querySelector('#quoteName') as HTMLInputElement;
@@ -37,18 +47,30 @@ function handleSaveClick() {
     return;
   }
 
-  saveQuote(vueModel, vueModel.result.quoteName);
+  try {
+    await saveQuote(vueModel, vueModel.result.quoteName);
 
-  const newVueModel = createVueModel();
-  vueModel.financeQuote = newVueModel.financeQuote;
-  vueModel.result = newVueModel.result;
-  vueModel.id = newVueModel.id;
+    const newVueModel = createVueModel();
+    vueModel.financeQuote = newVueModel.financeQuote;
+    vueModel.result = newVueModel.result;
+    vueModel.id = newVueModel.id;
+  } catch (error) {
+    console.error('Failed to save quote:', error);
+  }
 }
 
 function handleView(quote: SavedQuoteModel) {
   vueModel.financeQuote = quote.financeQuote;
   vueModel.result = quote.result;
   vueModel.id = quote.id;
+}
+
+async function handleDelete(quote: SavedQuoteModel) {
+  try {
+    await deleteQuote(vueModel, quote.id);
+  } catch (error) {
+    console.error('Failed to delete quote:', error);
+  }
 }
 
 </script>
@@ -77,7 +99,7 @@ function handleView(quote: SavedQuoteModel) {
     </div>
 
     <app-section title="Saved Quotes" class="span-2">
-      <SavedQuotes v-model="vueModel.savedQuotes" @view="handleView" />
+      <SavedQuotes v-model="vueModel.savedQuotes" @view="handleView" @delete="handleDelete" />
     </app-section>
   </main>
 </template>
