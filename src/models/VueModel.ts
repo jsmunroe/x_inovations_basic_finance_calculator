@@ -18,13 +18,47 @@ export interface ResultModel {
   quoteName: string
 }
 
-export interface VueModel {
+export interface SavedQuoteModel {
+  id: string
   financeQuote: FinanceQuoteModel
   result: ResultModel
 }
 
+export interface VueModel {
+  id: string | null,
+  financeQuote: FinanceQuoteModel
+  result: ResultModel
+
+  savedQuotes: SavedQuoteModel[]
+}
+
+export function createFinanceQuoteModel(): FinanceQuoteModel {
+  return {
+    cost: 0,
+    profit: 0,
+    sellingPrice: 0,
+    term: 0,
+    rate: 0,
+    outOfPocket: 0,
+    taxRate: 0,
+  };
+}
+
+export function createResultModel(): ResultModel {
+  return {
+    taxes: 0,
+    baseLoanAmount: 0,
+    interest: 0,
+    totalLoanAmount: 0,
+    payment: 0,
+    outOfPocket: 0,
+    quoteName: '',
+  };
+}
+
 export function createVueModel(): VueModel {
   return {
+    id: null,
     financeQuote: {
       cost: 0,
       profit: 0,
@@ -43,7 +77,18 @@ export function createVueModel(): VueModel {
       outOfPocket: 0,
       quoteName: '',
     },
+    savedQuotes: [],
   }
+}
+
+export function saveVueModel(vueModel: VueModel): void {
+  localStorage.setItem('financeCalculatorModel', JSON.stringify(vueModel));
+}
+
+export function loadVueModel(): VueModel {
+  const savedQuotesJson = localStorage.getItem('financeCalculatorModel');
+  const vueModel: VueModel = savedQuotesJson ? JSON.parse(savedQuotesJson) : createVueModel();
+  return vueModel;
 }
 
 export function updateFinanceQuoteByCost(financeQuote: FinanceQuoteModel, cost: number, ): FinanceQuoteModel {
@@ -81,4 +126,32 @@ export function computeResult(financeQuote: FinanceQuoteModel): ResultModel {
     outOfPocket,
     quoteName: '',
   }
+}
+
+export function saveQuote(vueModel: VueModel, quoteName: string): SavedQuoteModel {
+  const id = vueModel.id ?? crypto.randomUUID();
+  const existingQuoteIndex = vueModel.savedQuotes.findIndex(quote => quote.id === id);
+
+  const savedQuote: SavedQuoteModel = vueModel.savedQuotes[existingQuoteIndex]
+    ?? {
+      id,
+      financeQuote: { ...vueModel.financeQuote },
+      result: { ...vueModel.result, quoteName },
+    };
+
+  vueModel.id  = null;
+  vueModel.financeQuote = createFinanceQuoteModel();
+  vueModel.result = createResultModel();
+
+  if (existingQuoteIndex !== -1) {
+    vueModel.savedQuotes[existingQuoteIndex] = savedQuote;
+  } else {
+    vueModel.savedQuotes.push(savedQuote);
+  }
+
+  return savedQuote;
+}
+
+export function deleteQuote(vueModel: VueModel,id: string): void {
+  vueModel.savedQuotes = vueModel.savedQuotes.filter(quote => quote.id !== id);
 }

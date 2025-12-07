@@ -25,6 +25,6 @@ const result = defineModel<ResultModel>({ required: true })
     <currency-view :value="result.outOfPocket" />
 
     <label>Quote Name:</label>
-    <text-input id="quoteName" name="quoteName" :value="result.quoteName" />
+    <text-input id="quoteName" name="quoteName" v-model="result.quoteName" />
   </div>
 </template>

@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
-import { computeResult, createVueModel, saveQuote } from './models/VueModel'
+import { computeResult, createVueModel, loadVueModel, saveQuote, saveVueModel, type SavedQuoteModel } from './models/VueModel'
 import FinanceQuoteSection from './components/FinanceQuoteSection.vue'
 import ResultSection from './components/ResultSection.vue'
+import SavedQuotes from './components/common/SavedQuotes.vue'
 
-const vueModel = reactive(createVueModel())
+const vueModel = reactive(loadVueModel())
 
 watch(
   () => vueModel.financeQuote,
@@ -15,6 +16,14 @@ watch(
       ...computeResult(newVal),
       quoteName,
     }
+  },
+  { deep: true },
+)
+
+watch(
+  () => vueModel,
+  (newVal) => {
+    saveVueModel(newVal);
   },
   { deep: true },
 )
@@ -34,6 +43,12 @@ function handleSaveClick() {
   vueModel.financeQuote = newVueModel.financeQuote;
   vueModel.result = newVueModel.result;
   vueModel.id = newVueModel.id;
+}
+
+function handleView(quote: SavedQuoteModel) {
+  vueModel.financeQuote = quote.financeQuote;
+  vueModel.result = quote.result;
+  vueModel.id = quote.id;
 }
 
 </script>
@@ -56,13 +71,13 @@ function handleSaveClick() {
         <ResultSection v-model="vueModel.result" />
 
         <div class="buttons">
-          <button type="submit" @click="handleSaveClick"><i class="fa-regular fa-floppy-disk fa-lg"></i> Save</button>
+          <button type="submit" class="icon" @click="handleSaveClick"><i class="fa-regular fa-floppy-disk fa-lg"></i> Save</button>
         </div>
       </app-section>
     </div>
 
     <app-section title="Saved Quotes" class="span-2">
-
+      <SavedQuotes v-model="vueModel.savedQuotes" @view="handleView" />
     </app-section>
   </main>
 </template>

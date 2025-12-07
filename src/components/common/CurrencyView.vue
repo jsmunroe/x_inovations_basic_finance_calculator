@@ -28,7 +28,7 @@ const value = computed(() => formatCurrency(props.value))
 
 <style scoped>
 .currency-view-wrapper {
-  padding: 0.3rem 0.5rem;
+  padding: 0.3rem 0rem;
   text-align: right;
 }
 </style>
