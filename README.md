@@ -16,8 +16,27 @@ I created `CurrencyInput`, `CurrencyView`, `TextInput`, and `UnitInput` componen
 
 I did not use any CSS libraries like Bootstrap or Material for this. I created all the CSS for this app myself except for some boilerplate CSS that Vite added to base.css.
 
-## To Run
+## Setup Instructions
 
-`CD` to the backend folder and start the back-end server with `npm run dev`.
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-In a separate terminal run `npm run dev` on the root directory.
+2. Set up environment variables:
+   ```bash
+   cp .env.example .env
+   ```
+   
+3. Configure your `.env` file with your settings
+
+4. Set up the database:
+   ```bash
+   npm run db:generate
+   npm run db:push
+   ```
+
+5. Start development server:
+   ```bash
+   npm run dev
+   ```
